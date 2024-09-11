@@ -37,17 +37,31 @@ void main(){                                                  \n\
 void CriaTriangulos() {
 	GLfloat vertices[] = {
 		//x , y		
-		-1.0f, -1.0f, 0.0f,         //Vertice 0 (Preto)
-		1.0f, 1.0f, 0.0f,           //Vertice 1 (Verde)
-		1.0f, -1.0f, 0.0f,          //Vertice 2 (Vermelho)
-		0.0f, 0.0f, 1.0f            //Vertice 3 (Azul)
+		-1.0f, -1.0f, 0.0f,         //Vertice 0 
+		1.0f, 1.0f, 0.0f,           //Vertice 1 
+		1.0f, -1.0f, 0.0f,          //Vertice 2 
+		1.0f, 1.0f, 1.0f            //Vertice 3 
 	};
 
 	GLfloat vertices2[] = {
-		-1.0f, 1.0f, 0.0f,         //Vertice 0 (Preto)
-		1.0f, 1.0f, 0.0f,           //Vertice 1 (Verde)
-		-1.0f, -1.0f, 0.0f,          //Vertice 2 (Vermelho)
-		0.0f, 0.0f, 1.0f            //Vertice 3 (Azul)
+		-1.0f, 1.0f, 0.0f,         //Vertice 0 
+		1.0f, 1.0f, 0.0f,           //Vertice 1
+		-1.0f, -1.0f, 0.0f,          //Vertice 2 
+		-1.0f, 1.0f, 1.0f            //Vertice 3 
+	};
+
+	GLfloat vertices3[] = {
+		-1.0f, -1.0f, 0.0f,         //Vertice 0 
+		1.0f, 1.0f, 1.0f,           //Vertice 1
+		-1.0f, -1.0f, 1.0f,          //Vertice 2 
+		-1.0f, 1.0f, 1.0f            //Vertice 3 
+	};
+
+	GLfloat vertices4[] = {
+		-1.0f, -1.0f, 1.0f,         //Vertice 0 
+		1.0f, -1.0f, 0.0f,           //Vertice 1 
+		1.0f, -1.0f, 1.0f,          //Vertice 2 
+		1.0f, 1.0f, 1.0f            //Vertice 3 
 	};
 
 	GLuint indices[] = {
@@ -59,12 +73,21 @@ void CriaTriangulos() {
 
 	Mesh* tri1 = new Mesh();
 	Mesh* tri2 = new Mesh();
+	Mesh* tri3 = new Mesh();
+	Mesh* tri4 = new Mesh();
+
 	tri1->CreatMesh(vertices, sizeof(vertices),
 		indices, sizeof(indices));
 	tri2->CreatMesh(vertices2, sizeof(vertices2), 
 		indices, sizeof(indices));
+	tri3->CreatMesh(vertices3, sizeof(vertices3),
+		indices, sizeof(indices));
+	tri4->CreatMesh(vertices4, sizeof(vertices4),
+		indices, sizeof(indices));
 	listMesh.push_back(tri1);
 	listMesh.push_back(tri2);
+	listMesh.push_back(tri3);
+	listMesh.push_back(tri4);
 
 }
 
@@ -128,7 +151,7 @@ int main() {
 	//true=direita e false=esquerda
 	float triOffset = 0.0f, maxOffset = 0.7f, minOffset = -0.7f, incOffset = 0.001f;
 	float size = 0.4f, maxSize = 0.7f, minSize = -0.7f, incSize = 0.001f;
-	float angle = 0.0f, maxAngle = 360.0f, minAngle = -1.0f, incAngle = 0.1f;
+	float angle = 0.0f, maxAngle = 360.0f, minAngle = -1.0f, incAngle = 0.5f;
 
 	while (!glfwWindowShouldClose(mainWindow)) {
 
@@ -142,6 +165,8 @@ int main() {
 		glUseProgram(programa);
 		listMesh[0]->RenderMesh();
 		listMesh[1]->RenderMesh();
+		listMesh[2]->RenderMesh();
+		listMesh[3]->RenderMesh();
 
 		/*
 		* Alterando a cor do triangulo
@@ -177,7 +202,7 @@ int main() {
 		model = glm::scale(model, glm::vec3(0.4, 0.4, 0.4));
 
 		//Rotação
-		//model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		GLuint uniModel = glGetUniformLocation(programa, "model");
 		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
