@@ -1,11 +1,11 @@
 #include <iostream>
 #include <vector>
-#include "Mesh.h"
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "Mesh.h"
 
 GLuint programa;
 std::vector<Mesh*> listMesh;
@@ -38,8 +38,15 @@ void CriaTriangulos() {
 	GLfloat vertices[] = {
 		//x , y		
 		-1.0f, -1.0f, 0.0f,         //Vertice 0 (Preto)
-		0.0f, 1.0f, 0.0f,           //Vertice 1 (Verde)
+		1.0f, 1.0f, 0.0f,           //Vertice 1 (Verde)
 		1.0f, -1.0f, 0.0f,          //Vertice 2 (Vermelho)
+		0.0f, 0.0f, 1.0f            //Vertice 3 (Azul)
+	};
+
+	GLfloat vertices2[] = {
+		-1.0f, 1.0f, 0.0f,         //Vertice 0 (Preto)
+		1.0f, 1.0f, 0.0f,           //Vertice 1 (Verde)
+		-1.0f, -1.0f, 0.0f,          //Vertice 2 (Vermelho)
 		0.0f, 0.0f, 1.0f            //Vertice 3 (Azul)
 	};
 
@@ -50,29 +57,15 @@ void CriaTriangulos() {
 		0, 2, 3
 	};
 
-	Mesh* triangulo1 = new Mesh();
-	triangulo1->CreatMesh(vertices, sizeof(vertices), indices, sizeof(indices));
-	listMesh.push_back(triangulo1);
+	Mesh* tri1 = new Mesh();
+	Mesh* tri2 = new Mesh();
+	tri1->CreatMesh(vertices, sizeof(vertices),
+		indices, sizeof(indices));
+	tri2->CreatMesh(vertices2, sizeof(vertices2), 
+		indices, sizeof(indices));
+	listMesh.push_back(tri1);
+	listMesh.push_back(tri2);
 
-	GLfloat vertices2[] = {
-		//x , y		
-		-1.0f, -1.0f, 0.0f,         //Vertice 0 (Preto)
-		0.0f, 1.0f, 0.0f,           //Vertice 1 (Verde)
-		1.0f, -1.0f, 0.0f,          //Vertice 2 (Vermelho)
-		0.0f, 0.0f, 1.0f            //Vertice 3 (Azul)
-	};
-
-	GLuint indices2[] = {
-		0, 1, 2,
-		1, 2, 3,
-		0, 1, 3,
-		0, 2, 3
-	};
-
-	Mesh* triangulo2 = new Mesh();
-	triangulo2->CreatMesh(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
-	listMesh.push_back(triangulo2);
-	
 }
 
 
@@ -133,9 +126,9 @@ int main() {
 	//Variaveis para controle da movimentação do triangulo
 	bool direction = true, sizeDirection = true, angleDirection = true;
 	//true=direita e false=esquerda
-	float triOffset = 0.0f, maxOffset = 0.7f, minOffset = -0.7f, incOffset = 0.01f;
-	float size = 0.4f, maxSize = 0.7f, minSize = -0.7f, incSize = 0.01f;
-	float angle = 0.0f, maxAngle = 360.0f, minAngle = -1.0f, incAngle = 0.5f;
+	float triOffset = 0.0f, maxOffset = 0.7f, minOffset = -0.7f, incOffset = 0.001f;
+	float size = 0.4f, maxSize = 0.7f, minSize = -0.7f, incSize = 0.001f;
+	float angle = 0.0f, maxAngle = 360.0f, minAngle = -1.0f, incAngle = 0.1f;
 
 	while (!glfwWindowShouldClose(mainWindow)) {
 
@@ -148,7 +141,8 @@ int main() {
 		//Desenha o triangulo
 		glUseProgram(programa);
 		listMesh[0]->RenderMesh();
-		
+		listMesh[1]->RenderMesh();
+
 		/*
 		* Alterando a cor do triangulo
 		*/
@@ -177,7 +171,7 @@ int main() {
 		glm::mat4 model(1.0f);
 
 		//Movimentações do triangulo
-		model = glm::translate(model, glm::vec3(triOffset, triOffset, 0.0f));
+		//model = glm::translate(model, glm::vec3(triOffset, -triOffset, 0.0f));
 
 		//Tamanho do triangulo
 		model = glm::scale(model, glm::vec3(0.4, 0.4, 0.4));
@@ -186,32 +180,6 @@ int main() {
 		//model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		GLuint uniModel = glGetUniformLocation(programa, "model");
-		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
-
-		model = 0;
-		listMesh[1]->RenderMesh();
-
-		if (triOffset >= maxOffset || triOffset <= minOffset)
-			direction = !direction;
-		triOffset -= direction ? incOffset : incOffset * -1;
-
-		if (size >= maxSize || size <= minSize)
-			sizeDirection = !sizeDirection;
-		size += sizeDirection ? incSize : incSize * -1;
-
-		if (angle >= maxAngle || angle <= minAngle)
-			angleDirection = !angleDirection;
-		angle += angleDirection ? incAngle : incAngle * -1;
-
-		//Movimentações do triangulo
-		model = glm::translate(model, glm::vec3(triOffset, triOffset, 0.0f));
-
-		//Tamanho do triangulo
-		model = glm::scale(model, glm::vec3(0.4, 0.4, 0.4));
-
-		//Rotação
-		//model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
-
 		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 		glBindVertexArray(0);
