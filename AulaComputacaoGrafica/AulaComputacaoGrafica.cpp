@@ -37,21 +37,21 @@ void main(){                                                  \n\
 void CriaTriangulos() {
 	GLfloat vertices[] = {
 		//x , y		
-		-1.0f, -1.0f, 0.0f,         //Vertice 0 
-		1.0f, 1.0f, 0.0f,           //Vertice 1 
-		1.0f, -1.0f, 0.0f,          //Vertice 2 
+		-1.0f, -1.0f, -1.0f,         //Vertice 0 
+		1.0f, 1.0f, -1.0f,           //Vertice 1 
+		1.0f, -1.0f, -1.0f,          //Vertice 2 
 		1.0f, 1.0f, 1.0f            //Vertice 3 
 	};
 
 	GLfloat vertices2[] = {
-		-1.0f, 1.0f, 0.0f,         //Vertice 0 
-		1.0f, 1.0f, 0.0f,           //Vertice 1
-		-1.0f, -1.0f, 0.0f,          //Vertice 2 
+		-1.0f, 1.0f, -1.0f,         //Vertice 0 
+		1.0f, 1.0f, -1.0f,           //Vertice 1
+		-1.0f, -1.0f, -1.0f,          //Vertice 2 
 		-1.0f, 1.0f, 1.0f            //Vertice 3 
 	};
 
 	GLfloat vertices3[] = {
-		-1.0f, -1.0f, 0.0f,         //Vertice 0 
+		-1.0f, -1.0f, -1.0f,         //Vertice 0 
 		1.0f, 1.0f, 1.0f,           //Vertice 1
 		-1.0f, -1.0f, 1.0f,          //Vertice 2 
 		-1.0f, 1.0f, 1.0f            //Vertice 3 
@@ -59,9 +59,23 @@ void CriaTriangulos() {
 
 	GLfloat vertices4[] = {
 		-1.0f, -1.0f, 1.0f,         //Vertice 0 
-		1.0f, -1.0f, 0.0f,           //Vertice 1 
+		1.0f, -1.0f, -1.0f,          //Vertice 1 
 		1.0f, -1.0f, 1.0f,          //Vertice 2 
 		1.0f, 1.0f, 1.0f            //Vertice 3 
+	};
+
+	GLfloat vertices5[] = {
+		-1.0f, -1.0f, -1.0f,         //Vertice 0 
+		1.0f, 1.0f, -1.0f,           //Vertice 1 
+		1.0f, -1.0f, -1.0f,          //Vertice 2 
+		-1.0f, -1.0f, 1.0f            //Vertice 3 
+	};
+
+	GLfloat vertices6[] = {
+		-1.0f, 1.0f, 1.0f,         //Vertice 0 
+		1.0f, 1.0f, 1.0f,           //Vertice 1
+		1.0f, 1.0f, -1.0f,          //Vertice 2 
+		1.0f, -1.0f, 1.0f            //Vertice 3 
 	};
 
 	GLuint indices[] = {
@@ -75,6 +89,8 @@ void CriaTriangulos() {
 	Mesh* tri2 = new Mesh();
 	Mesh* tri3 = new Mesh();
 	Mesh* tri4 = new Mesh();
+	Mesh* tri5 = new Mesh();
+	Mesh* tri6 = new Mesh();
 
 	tri1->CreatMesh(vertices, sizeof(vertices),
 		indices, sizeof(indices));
@@ -84,10 +100,16 @@ void CriaTriangulos() {
 		indices, sizeof(indices));
 	tri4->CreatMesh(vertices4, sizeof(vertices4),
 		indices, sizeof(indices));
+	tri5->CreatMesh(vertices5, sizeof(vertices5),
+		indices, sizeof(indices));
+	tri6->CreatMesh(vertices6, sizeof(vertices6),
+		indices, sizeof(indices));
 	listMesh.push_back(tri1);
 	listMesh.push_back(tri2);
 	listMesh.push_back(tri3);
 	listMesh.push_back(tri4);
+	listMesh.push_back(tri5);
+	listMesh.push_back(tri6);
 
 }
 
@@ -167,6 +189,8 @@ int main() {
 		listMesh[1]->RenderMesh();
 		listMesh[2]->RenderMesh();
 		listMesh[3]->RenderMesh();
+		listMesh[4]->RenderMesh();
+		listMesh[5]->RenderMesh();
 
 		/*
 		* Alterando a cor do triangulo
@@ -202,7 +226,7 @@ int main() {
 		model = glm::scale(model, glm::vec3(0.4, 0.4, 0.4));
 
 		//Rotação
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 1.0f, 0.0f));
 
 		GLuint uniModel = glGetUniformLocation(programa, "model");
 		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
