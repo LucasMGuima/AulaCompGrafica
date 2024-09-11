@@ -1,12 +1,14 @@
 #include <iostream>
+#include <vector>
+#include "Mesh.h"
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-GLuint VAO, VBO, IBO, programa;
-
+GLuint programa;
+std::vector<Mesh*> listMesh;
 
 //Vertex Shader
 static const char* vShader = "                                \n\
@@ -48,22 +50,29 @@ void CriaTriangulos() {
 		0, 2, 3
 	};
 
-	glGenVertexArrays(1, &VAO); //Cria o VAO
-	glBindVertexArray(VAO); //Coloca o VAO em contexto
+	Mesh* triangulo1 = new Mesh();
+	triangulo1->CreatMesh(vertices, sizeof(vertices), indices, sizeof(indices));
+	listMesh.push_back(triangulo1);
 
-	glGenBuffers(1, &IBO); //Cria o IBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); //Coloca o IBO em contexto
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); //Explica o valor do Array
+	GLfloat vertices2[] = {
+		//x , y		
+		-1.0f, -1.0f, 0.0f,         //Vertice 0 (Preto)
+		0.0f, 1.0f, 0.0f,           //Vertice 1 (Verde)
+		1.0f, -1.0f, 0.0f,          //Vertice 2 (Vermelho)
+		0.0f, 0.0f, 1.0f            //Vertice 3 (Azul)
+	};
 
-	glGenBuffers(1, &VBO); //Cria o VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); //Coloca o VBO em contexto
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //Explica o valor do Array
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); //Explica os valores de x e y
-	glEnableVertexAttribArray(0);
+	GLuint indices2[] = {
+		0, 1, 2,
+		1, 2, 3,
+		0, 1, 3,
+		0, 2, 3
+	};
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //remover do contexto o IBO
-	glBindBuffer(GL_ARRAY_BUFFER, 0); //remover do contexto o VBO
-	glBindVertexArray(0); //remover do contexto o VAO
+	Mesh* triangulo2 = new Mesh();
+	triangulo2->CreatMesh(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
+	listMesh.push_back(triangulo2);
+	
 }
 
 
@@ -138,15 +147,8 @@ int main() {
 
 		//Desenha o triangulo
 		glUseProgram(programa);
-		glBindVertexArray(VAO);
-
-		/*
-		* Desenha o triangulo 3D
-		*/
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); //Coloca o IBO em contexto
-		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //remover do contexto o IBO
-
+		listMesh[0]->RenderMesh();
+		
 		/*
 		* Alterando a cor do triangulo
 		*/
@@ -181,9 +183,35 @@ int main() {
 		model = glm::scale(model, glm::vec3(0.4, 0.4, 0.4));
 
 		//Rotação
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+		//model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		GLuint uniModel = glGetUniformLocation(programa, "model");
+		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+
+		model = 0;
+		listMesh[1]->RenderMesh();
+
+		if (triOffset >= maxOffset || triOffset <= minOffset)
+			direction = !direction;
+		triOffset -= direction ? incOffset : incOffset * -1;
+
+		if (size >= maxSize || size <= minSize)
+			sizeDirection = !sizeDirection;
+		size += sizeDirection ? incSize : incSize * -1;
+
+		if (angle >= maxAngle || angle <= minAngle)
+			angleDirection = !angleDirection;
+		angle += angleDirection ? incAngle : incAngle * -1;
+
+		//Movimentações do triangulo
+		model = glm::translate(model, glm::vec3(triOffset, triOffset, 0.0f));
+
+		//Tamanho do triangulo
+		model = glm::scale(model, glm::vec3(0.4, 0.4, 0.4));
+
+		//Rotação
+		//model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+
 		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 		glBindVertexArray(0);
