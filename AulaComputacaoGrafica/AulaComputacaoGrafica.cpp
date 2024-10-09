@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <iostream>
 #include <vector>
 #include "GL/glew.h"
@@ -10,11 +12,14 @@
 #include "Shader.h"
 #include "Window.h"
 #include "Camera.h"
+#include "Texture.h"
 
 std::vector<Mesh*> meshList;
 std::vector<Shader*> shaderList;
 Window* window;
 Camera camera;
+Texture brickTexture;
+Texture groundTexture;
 
 //Vertex Shader
 static const char* vertexLocation = "VertexShaders.glsl";
@@ -26,7 +31,7 @@ void CriaTriangulos() {
 		-1.0f, -1.0f, 0.0f,         //Vertice 1 (Preto)
 		0.0f, 1.0f, 0.0f,           //Vertice 0 (Verde)
 		1.0f, -1.0f, 0.0f,          //Vertice 2 (Vermelho)
-		0.0f, -1.0f, 1.0f            //Vertice 3 (Azul)
+		0.0f, -1.0f, 1.0f           //Vertice 3 (Azul)
 	};
 
 	GLuint indices[] = {
@@ -61,6 +66,12 @@ int main() {
 
 	//Criando a camera
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 0.05f, 0.8f);
+
+	//Importa as texturas
+	brickTexture = Texture((char*)"brick.png");
+	brickTexture.loadTexture();
+	groundTexture = Texture((char*)"ground.png");
+	groundTexture.loadTexture();
 
 	//Variaveis para controle da movimentação do triangulo
 	bool direction = true, sizeDirection = true, angleDirection = true; //true=direita e false=esquerda
@@ -102,6 +113,8 @@ int main() {
 		/*
 		* Triangulo 1
 		*/
+		//usa a textura nesse triangulo
+		brickTexture.useTexture();
 		meshList[0]->RenderMesh();
 		//criar uma matriz 4x4 (1.0f)
 		glm::mat4 model(1.0f);
@@ -110,10 +123,11 @@ int main() {
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Rotação
 
 		glUniformMatrix4fv(shader->GetUniformModel(), 1, GL_FALSE, glm::value_ptr(model)); //Envia os dados para o triangulo
-
 		/*
 		* Triangulo 2
 		*/
+		//usa a textura nesse triangulo
+		groundTexture.useTexture();
 		meshList[1]->RenderMesh();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.5f, -2.0f)); //Movimentações do triangulo

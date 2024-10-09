@@ -1,5 +1,4 @@
 #include <GL/glew.h>
-#include <iostream>
 
 #pragma once
 class Mesh
